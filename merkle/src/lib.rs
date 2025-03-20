@@ -13,14 +13,7 @@ impl MerkleTree {
     pub fn new(data: &[&[u8]]) -> Self {
         let mut digest = data
             .iter()
-            .map(|address| {
-                let mut hasher = Keccak256::new();
-                hasher.update(address);
-                let result = hasher.finalize();
-                let mut hash = [0u8; 32];
-                hash.copy_from_slice(&result);
-                hash
-            })
+            .map(|d| keccak256(&keccak256(&d)))
             .collect::<Vec<_>>();
 
         digest.sort();
@@ -66,11 +59,7 @@ impl MerkleTree {
     }
 
     pub fn get_proof(&self, data: &[u8]) -> Option<Vec<[u8; 32]>> {
-        let mut digest = Keccak256::new();
-        digest.update(data);
-        let result = digest.finalize();
-        let mut hash = [0u8; 32];
-        hash.copy_from_slice(&result);
+        let hash = keccak256(&keccak256(data));
 
         if self.leaf_indicies.get(&hash).is_none() {
             return None;
@@ -82,7 +71,11 @@ impl MerkleTree {
             let current_layer = &self.layers[l];
 
             let sibling_idx = if idx % 2 == 0 {
-                if idx + 1 < current_layer.len() { idx + 1 } else { idx }
+                if idx + 1 < current_layer.len() {
+                    idx + 1
+                } else {
+                    idx
+                }
             } else {
                 idx - 1
             };
@@ -109,16 +102,22 @@ fn merge(a: &[u8; 32], b: &[u8; 32]) -> [u8; 32] {
     let mut hash = [0u8; 32];
     hash.copy_from_slice(&result);
 
-    hash
+    keccak256(&hash)
 }
 
-pub fn verify(root: &[u8; 32], data: &[u8], proof: &[[u8; 32]]) -> bool {
+fn keccak256(data: &[u8]) -> [u8; 32] {
     let mut digest = Keccak256::new();
     digest.update(data);
     let result = digest.finalize();
     let mut hash = [0u8; 32];
     hash.copy_from_slice(&result);
-    
+
+    hash
+}
+
+pub fn verify(root: &[u8; 32], data: &[u8], proof: &[[u8; 32]]) -> bool {
+    let mut hash = keccak256(&keccak256(data));
+
     for p in proof {
         hash = merge(&hash, p);
     }
@@ -154,7 +153,6 @@ mod test {
 
         assert!(proof_b.len() == 1);
         assert!(verify(&tree.root().unwrap(), a, &proof_b));
- 
     }
 
     #[test]
