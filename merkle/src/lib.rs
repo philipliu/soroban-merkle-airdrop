@@ -4,16 +4,16 @@ use sha3::{Digest, Keccak256};
 use std::collections::HashMap;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-struct MerkleTree {
+pub struct MerkleTree {
     layers: Vec<Vec<[u8; 32]>>,
     leaf_indicies: HashMap<[u8; 32], usize>,
 }
 
 impl MerkleTree {
-    pub fn new(data: &[&[u8]]) -> Self {
+    pub fn new<T: AsRef<[u8]>, I: IntoIterator<Item = T>>(data: I) -> Self {
         let mut digest = data
-            .iter()
-            .map(|d| keccak256(&keccak256(&d)))
+            .into_iter()
+            .map(|d| keccak256(keccak256(d.as_ref())))
             .collect::<Vec<_>>();
 
         digest.sort();
@@ -58,12 +58,10 @@ impl MerkleTree {
         self.layers.last().map(|l| l[0])
     }
 
-    pub fn get_proof(&self, data: &[u8]) -> Option<Vec<[u8; 32]>> {
-        let hash = keccak256(&keccak256(data));
+    pub fn get_proof<T: AsRef<[u8]>>(&self, data: T) -> Option<Vec<[u8; 32]>> {
+        let hash = keccak256(keccak256(data.as_ref()));
 
-        if self.leaf_indicies.get(&hash).is_none() {
-            return None;
-        };
+        self.leaf_indicies.get(&hash)?;
         let idx = *self.leaf_indicies.get(&hash).unwrap();
 
         let mut proof = Vec::new();
@@ -102,10 +100,10 @@ fn merge(a: &[u8; 32], b: &[u8; 32]) -> [u8; 32] {
     let mut hash = [0u8; 32];
     hash.copy_from_slice(&result);
 
-    keccak256(&hash)
+    keccak256(hash)
 }
 
-fn keccak256(data: &[u8]) -> [u8; 32] {
+fn keccak256<T: AsRef<[u8]>>(data: T) -> [u8; 32] {
     let mut digest = Keccak256::new();
     digest.update(data);
     let result = digest.finalize();
@@ -115,14 +113,14 @@ fn keccak256(data: &[u8]) -> [u8; 32] {
     hash
 }
 
-pub fn verify(root: &[u8; 32], data: &[u8], proof: &[[u8; 32]]) -> bool {
-    let mut hash = keccak256(&keccak256(data));
+pub fn verify<T: AsRef<[u8]>>(root: &[u8; 32], data: T, proof: &[[u8; 32]]) -> bool {
+    let mut hash = keccak256(keccak256(data.as_ref()));
 
     for p in proof {
         hash = merge(&hash, p);
     }
 
-    return hash.eq(root);
+    hash.eq(root)
 }
 
 #[cfg(test)]
@@ -134,7 +132,7 @@ mod test {
         let a = b"address 1";
         let b = b"address 2";
 
-        let tree = MerkleTree::new(&[a, b]);
+        let tree = MerkleTree::new([a, b]);
 
         assert!(tree.root().is_some());
     }
@@ -144,7 +142,7 @@ mod test {
         let a = b"address 1";
         let b = b"address 2";
 
-        let tree = MerkleTree::new(&[a, b]);
+        let tree = MerkleTree::new([a, b]);
         let proof_a = tree.get_proof(a).unwrap();
         let proof_b = tree.get_proof(a).unwrap();
 
@@ -161,7 +159,7 @@ mod test {
         let b = b"address 2";
         let c = b"address 3";
 
-        let tree = MerkleTree::new(&[a, b]);
+        let tree = MerkleTree::new([a, b]);
         let proof_c = tree.get_proof(c);
 
         assert!(proof_c.is_none());
@@ -172,12 +170,12 @@ mod test {
         let a = b"address 1";
         let b = b"address 2";
         let c = b"address 3";
-        let tree_1 = MerkleTree::new(&[a, b, c]);
+        let tree_1 = MerkleTree::new([a, b, c]);
 
         let d = b"address 4";
         let e = b"address 5";
         let f = b"address 6";
-        let tree_2 = MerkleTree::new(&[d, e, f]);
+        let tree_2 = MerkleTree::new([d, e, f]);
 
         let tree_1_root = tree_1.root().unwrap();
 
