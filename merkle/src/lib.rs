@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use sha3::{Digest, Keccak256};
 use std::collections::HashMap;
 
