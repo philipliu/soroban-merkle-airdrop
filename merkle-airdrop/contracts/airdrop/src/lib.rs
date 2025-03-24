@@ -55,16 +55,18 @@ impl AirdropContract {
             let a = hash.to_array();
             let b = p.to_array();
 
-            let combined: BytesN<64>;
-            if a < b {
-                let combined_vec = [a, b].concat();
-                let combined_array: [u8; 64] = combined_vec.try_into().expect("Invalid length");
-                combined = BytesN::from_array(&env, &combined_array);
+            let combined_array: [u8; 64] = if a < b {
+                let mut arr = [0u8; 64];
+                arr[..32].copy_from_slice(&a);
+                arr[32..].copy_from_slice(&b);
+                arr
             } else {
-                let combined_vec = [a, b].concat();
-                let combined_array: [u8; 64] = combined_vec.try_into().expect("Invalid length");
-                combined = BytesN::from_array(&env, &combined_array);
-            }
+                let mut arr = [0u8; 64];
+                arr[..32].copy_from_slice(&b);
+                arr[32..].copy_from_slice(&a);
+                arr
+            };
+            let combined = BytesN::from_array(&env, &combined_array);
             hash = env.crypto().keccak256(&combined.into());
             hash = env.crypto().keccak256(&hash.into());
         }
