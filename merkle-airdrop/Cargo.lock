@@ -18,6 +18,7 @@ dependencies = [
 name = "airdrop"
 version = "0.0.0"
 dependencies = [
+ "hex",
  "soroban-sdk",
 ]
 

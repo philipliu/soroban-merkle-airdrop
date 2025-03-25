@@ -9,19 +9,19 @@ pub struct MerkleTree {
 
 impl MerkleTree {
     pub fn new<T: AsRef<[u8]>, I: IntoIterator<Item = T>>(data: I) -> Self {
-        let mut digest = data
+        let mut digests = data
             .into_iter()
             .map(|d| keccak256(keccak256(d.as_ref())))
             .collect::<Vec<_>>();
 
-        digest.sort();
+        digests.sort();
 
         let mut leaf_indicies = HashMap::new();
-        for (i, leaf) in digest.iter().enumerate() {
+        for (i, leaf) in digests.iter().enumerate() {
             leaf_indicies.insert(*leaf, i);
         }
 
-        let mut layers = vec![digest];
+        let mut layers = vec![digests];
         let mut level: usize = 0;
 
         while layers[level].len() > 1 {
@@ -30,8 +30,8 @@ impl MerkleTree {
 
             for i in (0..current_layer.len()).step_by(2) {
                 if i + 1 < current_layer.len() {
-                    let a = current_layer[0];
-                    let b = current_layer[1];
+                    let a = current_layer[i];
+                    let b = current_layer[i + 1];
                     let parent = merge(&a, &b);
                     next_layer.push(parent);
                 } else {
@@ -60,7 +60,7 @@ impl MerkleTree {
         let hash = keccak256(keccak256(data.as_ref()));
 
         self.leaf_indicies.get(&hash)?;
-        let idx = *self.leaf_indicies.get(&hash).unwrap();
+        let mut idx = *self.leaf_indicies.get(&hash).unwrap();
 
         let mut proof = Vec::new();
         for l in 0..self.layers.len() - 1 {
@@ -79,6 +79,8 @@ impl MerkleTree {
             if sibling_idx != idx {
                 proof.push(current_layer[sibling_idx])
             }
+
+            idx /= 2;
         }
 
         Some(proof)
@@ -129,10 +131,17 @@ mod test {
     fn test_construction() {
         let a = b"address 1";
         let b = b"address 2";
+        let c = b"address 3";
 
-        let tree = MerkleTree::new([a, b]);
+        let tree = MerkleTree::new([a, b, c]);
+        let proof_a = tree.get_proof(a).unwrap();
+        let proof_b = tree.get_proof(b).unwrap();
+        let proof_c = tree.get_proof(c).unwrap();
 
         assert!(tree.root().is_some());
+        assert!(!proof_a.is_empty());
+        assert!(!proof_b.is_empty());
+        assert!(!proof_c.is_empty());
     }
 
     #[test]

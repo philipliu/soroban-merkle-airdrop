@@ -1,7 +1,7 @@
 #![no_std]
 use soroban_sdk::{
-    contract, contracterror, contractimpl, contracttype, token, xdr::ToXdr, Address, BytesN, Env,
-    Vec,
+    contract, contracterror, contractimpl, contracttype, map, symbol_short, token, xdr::ToXdr,
+    Address, BytesN, Env, IntoVal, Map, Symbol, Val, Vec,
 };
 
 #[contracttype]
@@ -20,14 +20,7 @@ pub enum Error {
     InvalidProof = 2,
 }
 
-#[derive(Clone, Debug)]
-#[contracttype]
-pub struct Receiver {
-    pub address: Address,
-    pub amount: i128,
-}
-
-type Proof = Vec<BytesN<32>>;
+type Proofs = Vec<BytesN<32>>;
 
 #[contract]
 pub struct AirdropContract;
@@ -39,16 +32,23 @@ impl AirdropContract {
         env.storage().instance().set(&DataKey::TokenAddress, &token);
     }
 
-    pub fn claim(env: Env, receiver: Receiver, proof: Proof) -> Result<(), Error> {
-        if let Some(_) = env
+    pub fn claim(env: Env, receiver: Address, amount: i128, proof: Proofs) -> Result<(), Error> {
+        if env
             .storage()
             .instance()
-            .get::<_, ()>(&DataKey::Claimed(receiver.clone().address))
+            .get::<_, ()>(&DataKey::Claimed(receiver.clone()))
+            .is_some()
         {
             return Err(Error::AlreadyClaimed);
         }
 
-        let mut hash = env.crypto().keccak256(&receiver.clone().to_xdr(&env));
+        let data: Map<Symbol, Val> = map![
+            &env,
+            (symbol_short!("address"), receiver.into_val(&env)),
+            (symbol_short!("amount"), amount.into_val(&env)),
+        ];
+
+        let mut hash = env.crypto().keccak256(&data.to_xdr(&env));
         hash = env.crypto().keccak256(&hash.into());
 
         for p in proof {
@@ -89,13 +89,13 @@ impl AirdropContract {
 
         token::TokenClient::new(&env, &token).transfer(
             &env.current_contract_address(),
-            &receiver.address,
-            &receiver.amount,
+            &receiver,
+            &amount,
         );
 
         env.storage()
             .instance()
-            .set(&DataKey::Claimed(receiver.address), &());
+            .set(&DataKey::Claimed(receiver), &());
 
         Ok(())
     }
