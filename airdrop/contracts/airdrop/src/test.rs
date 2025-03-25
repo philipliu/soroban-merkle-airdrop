@@ -33,7 +33,7 @@ fn test_valid_claim() {
 
     let args = make_args(
         &env,
-        "c3a2c7612fc1237d4bce8808615e0712e12bfcdacc2a5d500058ee8d688fb70f",
+        "8943b9ea17c82021714e46d047234e52db5fa43f25a427fbb80831f1a384c340",
         token.address.clone(),
     );
     let contract_id = env.register(AirdropContract {}, args);
@@ -50,7 +50,7 @@ fn test_valid_claim() {
         &env,
         BytesN::from_array(
             &env,
-            &hex::decode("f3946cd8cd852657164f2ea91b106ddbb4057958d2cf1bc0e6a844eb1c21cc4a")
+            &hex::decode("a5a8655f4b3f68e556a2e7edcf8fd44863ab22bad99cfc6b14d8bdff943e7833")
                 .unwrap()
                 .try_into()
                 .unwrap(),
@@ -74,7 +74,7 @@ fn test_double_claim() {
 
     let args = make_args(
         &env,
-        "c3a2c7612fc1237d4bce8808615e0712e12bfcdacc2a5d500058ee8d688fb70f",
+        "8943b9ea17c82021714e46d047234e52db5fa43f25a427fbb80831f1a384c340",
         token.address.clone(),
     );
     let contract_id = env.register(AirdropContract {}, args);
@@ -91,7 +91,7 @@ fn test_double_claim() {
         &env,
         BytesN::from_array(
             &env,
-            &hex::decode("f3946cd8cd852657164f2ea91b106ddbb4057958d2cf1bc0e6a844eb1c21cc4a")
+            &hex::decode("a5a8655f4b3f68e556a2e7edcf8fd44863ab22bad99cfc6b14d8bdff943e7833")
                 .unwrap()
                 .try_into()
                 .unwrap(),
@@ -113,7 +113,7 @@ fn test_bad_claim() {
 
     let args = make_args(
         &env,
-        "c3a2c7612fc1237d4bce8808615e0712e12bfcdacc2a5d500058ee8d688fb70f",
+        "8943b9ea17c82021714e46d047234e52db5fa43f25a427fbb80831f1a384c340",
         token.address.clone(),
     );
     let contract_id = env.register(AirdropContract {}, args);
@@ -130,7 +130,7 @@ fn test_bad_claim() {
         &env,
         BytesN::from_array(
             &env,
-            &hex::decode("f3946cd8cd852657164f2ea91b106ddbb4057958d2cf1bc0e6a844eb1c21cc4a")
+            &hex::decode("a5a8655f4b3f68e556a2e7edcf8fd44863ab22bad99cfc6b14d8bdff943e7833")
                 .unwrap()
                 .try_into()
                 .unwrap(),

@@ -11,7 +11,7 @@ impl MerkleTree {
     pub fn new<T: AsRef<[u8]>, I: IntoIterator<Item = T>>(data: I) -> Self {
         let mut digests = data
             .into_iter()
-            .map(|d| keccak256(keccak256(d.as_ref())))
+            .map(|d| keccak256(d.as_ref()))
             .collect::<Vec<_>>();
 
         digests.sort();
@@ -57,7 +57,7 @@ impl MerkleTree {
     }
 
     pub fn get_proof<T: AsRef<[u8]>>(&self, data: T) -> Option<Vec<[u8; 32]>> {
-        let hash = keccak256(keccak256(data.as_ref()));
+        let hash = keccak256(data.as_ref());
 
         self.leaf_indicies.get(&hash)?;
         let mut idx = *self.leaf_indicies.get(&hash).unwrap();
@@ -100,7 +100,7 @@ fn merge(a: &[u8; 32], b: &[u8; 32]) -> [u8; 32] {
     let mut hash = [0u8; 32];
     hash.copy_from_slice(&result);
 
-    keccak256(hash)
+    hash
 }
 
 fn keccak256<T: AsRef<[u8]>>(data: T) -> [u8; 32] {
@@ -114,7 +114,7 @@ fn keccak256<T: AsRef<[u8]>>(data: T) -> [u8; 32] {
 }
 
 pub fn verify<T: AsRef<[u8]>>(root: &[u8; 32], data: T, proof: &[[u8; 32]]) -> bool {
-    let mut hash = keccak256(keccak256(data.as_ref()));
+    let mut hash = keccak256(data.as_ref());
 
     for p in proof {
         hash = merge(&hash, p);

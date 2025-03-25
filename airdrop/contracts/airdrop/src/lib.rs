@@ -56,7 +56,6 @@ impl AirdropContract {
         };
 
         let mut hash = env.crypto().keccak256(&data.to_xdr(&env));
-        hash = env.crypto().keccak256(&hash.into());
 
         for p in proof {
             let a = hash.to_array();
@@ -75,7 +74,6 @@ impl AirdropContract {
             };
             let combined = BytesN::from_array(&env, &combined_array);
             hash = env.crypto().keccak256(&combined.into());
-            hash = env.crypto().keccak256(&hash.into());
         }
 
         let root = env
