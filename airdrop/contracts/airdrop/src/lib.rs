@@ -1,4 +1,6 @@
 #![no_std]
+use core::ops::Add;
+
 use soroban_sdk::{
     contract, contracterror, contractimpl, contracttype, map, symbol_short, token, xdr::ToXdr,
     Address, BytesN, Env, IntoVal, Map, Symbol, Val, Vec,
@@ -18,6 +20,13 @@ enum DataKey {
 pub enum Error {
     AlreadyClaimed = 1,
     InvalidProof = 2,
+}
+
+#[contracttype]
+#[derive(Clone, Debug)]
+pub struct Receiver {
+    pub address: Address,
+    pub amount: i128,
 }
 
 type Proofs = Vec<BytesN<32>>;
@@ -42,11 +51,10 @@ impl AirdropContract {
             return Err(Error::AlreadyClaimed);
         }
 
-        let data: Map<Symbol, Val> = map![
-            &env,
-            (symbol_short!("address"), receiver.into_val(&env)),
-            (symbol_short!("amount"), amount.into_val(&env)),
-        ];
+        let data = Receiver {
+            address: receiver.clone(),
+            amount,
+        };
 
         let mut hash = env.crypto().keccak256(&data.to_xdr(&env));
         hash = env.crypto().keccak256(&hash.into());
