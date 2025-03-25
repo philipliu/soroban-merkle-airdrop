@@ -1,9 +1,8 @@
 #![no_std]
-use core::ops::Add;
 
 use soroban_sdk::{
-    contract, contracterror, contractimpl, contracttype, map, symbol_short, token, xdr::ToXdr,
-    Address, BytesN, Env, IntoVal, Map, Symbol, Val, Vec,
+    contract, contracterror, contractimpl, contracttype, token, xdr::ToXdr, Address, BytesN, Env,
+    Vec,
 };
 
 #[contracttype]
