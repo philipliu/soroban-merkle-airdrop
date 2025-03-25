@@ -111,6 +111,8 @@ name = "merkle"
 version = "0.1.0"
 dependencies = [
  "hex",
+ "serde",
+ "serde_json",
  "sha3",
  "stellar-strkey 0.0.13",
  "stellar-xdr",
