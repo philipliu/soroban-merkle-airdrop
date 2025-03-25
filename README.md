@@ -5,8 +5,7 @@
 ### Usage
 
 ```bash
-cd soroban-merkle-airdrop/merkle
-cargo run -- <receivers-file> <proofs-output-file>
+cargo run --bin merkle -- <receivers-file> <proofs-output-file>
 ```
 
 #### Parameters
