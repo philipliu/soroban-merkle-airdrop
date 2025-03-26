@@ -28,8 +28,6 @@ pub struct Receiver {
     pub amount: i128,
 }
 
-type Proofs = Vec<BytesN<32>>;
-
 #[contract]
 pub struct AirdropContract;
 
@@ -40,7 +38,12 @@ impl AirdropContract {
         env.storage().instance().set(&DataKey::TokenAddress, &token);
     }
 
-    pub fn claim(env: Env, receiver: Address, amount: i128, proof: Proofs) -> Result<(), Error> {
+    pub fn claim(
+        env: Env,
+        receiver: Address,
+        amount: i128,
+        proof: Vec<BytesN<32>>,
+    ) -> Result<(), Error> {
         if env
             .storage()
             .instance()

@@ -46,7 +46,7 @@ fn test_valid_claim() {
         "CAASCQKVVBSLREPEUGPOTQZ4BC2NDBY2MW7B2LGIGFUPIY4Z3XUZRVTX",
     );
     let amount = 100;
-    let proofs: Proofs = vec![
+    let proofs = vec![
         &env,
         BytesN::from_array(
             &env,
@@ -86,8 +86,8 @@ fn test_double_claim() {
         &env,
         "CAASCQKVVBSLREPEUGPOTQZ4BC2NDBY2MW7B2LGIGFUPIY4Z3XUZRVTX",
     );
-    let amount = 100;
-    let proofs: Proofs = vec![
+    let amount: i128 = 100;
+    let proofs = vec![
         &env,
         BytesN::from_array(
             &env,
@@ -126,7 +126,7 @@ fn test_bad_claim() {
         "CAASCQKVVBSLREPEUGPOTQZ4BC2NDBY2MW7B2LGIGFUPIY4Z3XUZRVTX",
     );
     let amount = 100000; // This is a different amount
-    let proofs: Proofs = vec![
+    let proofs = vec![
         &env,
         BytesN::from_array(
             &env,
