@@ -23,7 +23,7 @@ pub enum Error {
 
 #[contracttype]
 #[derive(Clone, Debug)]
-pub struct Receiver {
+struct Receiver {
     pub address: Address,
     pub amount: i128,
 }
