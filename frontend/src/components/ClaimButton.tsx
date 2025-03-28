@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as Contract from "../packages/contract";
 import { signTransaction } from "../packages/stellar-wallets-kit";
 
@@ -7,37 +7,62 @@ interface ClaimButtonProps {
     walletPublicKey: string | null;
 }
 
+interface ProofEntry {
+    receiver: {
+        address: string;
+        amount: number;
+    };
+    proofs: string[];
+}
+
 export default function ClaimButton(
     { isConnected, walletPublicKey }: ClaimButtonProps,
 ) {
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [proofData, setProofData] = useState<ProofEntry[]>([]);
+    const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
 
-    const amount = 100;
-    const proof = [
-        Buffer.from(
-            "5a1f3e8294999cb58928c96974a88af852be077c86a139bf9fb44ccd2ca13514",
-            "hex",
-        ),
-        Buffer.from(
-            "ca4b9e5036ee918d0b67986fd9ef3261aa5b4dd83ddc1302a030a1e212a68442",
-            "hex",
-        ),
-    ];
+    useEffect(() => {
+        const fetchProofData = async () => {
+            try {
+                const response = await fetch("/proofs.json");
+                const data = await response.json();
+                setProofData(data);
+                setIsDataLoaded(true);
+            } catch (error) {
+                console.error("Failed to load proof data:", error);
+            }
+        };
+
+        fetchProofData();
+    }, []);
+
+    const walletProof = walletPublicKey
+        ? proofData.find((entry) => entry.receiver.address === walletPublicKey)
+        : undefined;
+
+    const amount = walletProof?.receiver.amount || 0;
+    const proofHexes = walletProof?.proofs || [];
+    const proof = proofHexes.map((hex) => Buffer.from(hex, "hex"));
+
+    const contract = new Contract.Client({
+        ...Contract.networks.testnet,
+        rpcUrl: "https://soroban-testnet.stellar.org:443",
+        contractId: "CB2E23M6KFTKHNVP4JVW34XGZCODNGPPSENAFFX22RAXD2K3BU3NQ4IE", // Your contract ID
+    });
 
     return (
         <div>
             <button
-                disabled={isLoading || !isConnected || !walletPublicKey}
+                disabled={isLoading ||
+                    !isConnected ||
+                    !walletPublicKey ||
+                    !isDataLoaded ||
+                    !walletProof}
                 onClick={async () => {
-                    if (!walletPublicKey) return;
+                    if (!walletPublicKey || !walletProof) return;
 
                     try {
-                        const contract = new Contract.Client({
-                            ...Contract.networks.testnet,
-                            rpcUrl: "https://soroban-testnet.stellar.org:443",
-                            publicKey: walletPublicKey,
-                        });
-
                         setIsLoading(true);
                         const tx = await contract.claim({
                             receiver: walletPublicKey,
@@ -57,12 +82,24 @@ export default function ClaimButton(
                     }
                 }}
             >
-                Claim
+                {isLoading ? "Processing..." : "Claim"}
             </button>
 
             {!isConnected && (
                 <div style={{ color: "red", marginTop: "8px" }}>
                     Please connect your wallet first to claim tokens.
+                </div>
+            )}
+
+            {isConnected && walletPublicKey && !walletProof && isDataLoaded && (
+                <div style={{ color: "red", marginTop: "8px" }}>
+                    No airdrop allocation found for this wallet.
+                </div>
+            )}
+
+            {isConnected && walletPublicKey && walletProof && (
+                <div style={{ color: "green", marginTop: "8px" }}>
+                    You can claim {amount / 100000000} tokens.
                 </div>
             )}
         </div>

@@ -1,0 +1,31 @@
+[
+  {
+    "receiver": {
+      "address": "GBBGQHMUEPZV6X2B7DWAB2Y6TAY24AWXIEMS2H3G2VOPXNMY47VTWN7J",
+      "amount": 10000000000
+    },
+    "proofs": [
+      "3d7afa40ad047945bf8c5a59007a4017883f100bd3da137a155f5914e3ec90fb"
+    ]
+  },
+  {
+    "receiver": {
+      "address": "GDNXGXQHBGJC5EPCZRUGCWP4K5CSKCZAVI2XFOJAPWTBKEB2QC6XZYPV",
+      "amount": 10000000000
+    },
+    "proofs": [
+      "7bbc3c61402d0d7437f318b52ab7f0347d2d770ac224975d6b3c8916e242d974",
+      "bb1dd441bd052880647c1113daedc183ae90e90fa1e0d6809bcb23d3e8f73282"
+    ]
+  },
+  {
+    "receiver": {
+      "address": "GBDRLGGZQ7JZWVHRISYCQR22UV7ALV2KHH4RRVMWKHS7YEZJEUINQCV6",
+      "amount": 10000000000
+    },
+    "proofs": [
+      "0ff4c58cf65166bde47f7afe1dabff316ffc9a0c353a625de4b1f81d6f71ff27",
+      "bb1dd441bd052880647c1113daedc183ae90e90fa1e0d6809bcb23d3e8f73282"
+    ]
+  }
+]
