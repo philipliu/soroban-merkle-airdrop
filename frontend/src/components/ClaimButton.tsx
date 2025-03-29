@@ -19,22 +19,29 @@ export default function ClaimButton(
     { isConnected, walletPublicKey }: ClaimButtonProps,
 ) {
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [contractId, setContractId] = useState<string | null>(null);
     const [proofData, setProofData] = useState<ProofEntry[]>([]);
     const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
 
     useEffect(() => {
-        const fetchProofData = async () => {
-            try {
-                const response = await fetch("/proofs.json");
-                const data = await response.json();
-                setProofData(data);
+        try {
+            const envData = import.meta.env.VITE_PROOF_DATA;
+            if (envData) {
+                setProofData(JSON.parse(envData));
                 setIsDataLoaded(true);
-            } catch (error) {
-                console.error("Failed to load proof data:", error);
             }
-        };
+        } catch (error) {
+            console.error("Failed to parse proof data:", error);
+        }
+    }, []);
 
-        fetchProofData();
+    useEffect(() => {
+        const contractId = import.meta.env.VITE_CONTRACT_ID;
+        if (contractId) {
+            setContractId(contractId);
+        } else {
+            console.error("Contract ID is not set in environment variables.");
+        }
     }, []);
 
     const walletProof = walletPublicKey
@@ -48,7 +55,8 @@ export default function ClaimButton(
     const contract = new Contract.Client({
         ...Contract.networks.testnet,
         rpcUrl: "https://soroban-testnet.stellar.org:443",
-        contractId: "CB2E23M6KFTKHNVP4JVW34XGZCODNGPPSENAFFX22RAXD2K3BU3NQ4IE", // Your contract ID
+        contractId: contractId!,
+        publicKey: walletPublicKey!,
     });
 
     return (
