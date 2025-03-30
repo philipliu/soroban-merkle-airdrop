@@ -15,7 +15,7 @@ function App() {
       <div className="max-w-md mx-auto">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-            Merkle Tree Aidrop Demo
+            Merkle Tree Airdrop Demo
          </h1>
           <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg">
             Connect your wallet to claim your tokens.

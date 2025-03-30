@@ -1,5 +1,16 @@
 # soroban-merkle-airdrop
 
+A simple airdrop contract using Merkle trees to distribute tokens to multiple receipients.
+
+## Layout
+
+```
+.
+├── airdrop — Airdrop contract
+├── frontend — Claim UI
+├── merkle — Merkle tree proof generation
+```
+
 ## Proof Generation
 
 ### Usage
@@ -50,4 +61,34 @@ cargo run --bin merkle -- <receivers-file> <proofs-output-file>
         ]
     }
 ]
+```
+
+## Contract Deployment
+
+Deploy the contract using the following command:
+
+```bash
+stellar contract deploy \
+--wasm target/wasm32-unknown-unknown/release/airdrop.wasm \
+--source-account alice \
+--network testnet \
+-- \
+--root_hash <your-root-hash> \
+--token CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC
+```
+
+Next, send the deployed contract funds to distribute.
+
+## Claim UI
+
+Set up the environment using the proofs generated and the contract address
+from the previous steps:
+```
+cp .env.example .env
+```
+
+Start the server:
+```
+npm install
+npm run dev
 ```
