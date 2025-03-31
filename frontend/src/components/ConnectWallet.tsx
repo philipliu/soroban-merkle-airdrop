@@ -9,22 +9,13 @@ export default function ConnectWallet({ onWalletUpdate }: ConnectWalletProps) {
   const { publicKey, isConnected, isConnecting, connectWallet, disconnectWallet, checkConnection } = useWalletStore();
   
   useEffect(() => {
-    checkConnection();
-    
-    const intervalId = setInterval(() => {
-      checkConnection();
-    }, 1000);
-    
-    return () => clearInterval(intervalId);
-  }, [checkConnection]);
-  
-  useEffect(() => {
     if (onWalletUpdate) {
       onWalletUpdate(isConnected, publicKey);
     }
   }, [isConnected, publicKey, onWalletUpdate]);
   
   const handleWalletAction = async () => {
+    await checkConnection();
     if (isConnected) {
       await disconnectWallet();
     } else {

@@ -1,15 +1,7 @@
-import { useEffect } from "react";
 import ClaimButton from "./components/ClaimButton";
 import ConnectWallet from "./components/ConnectWallet";
-import { useWalletStore } from "./store/walletStore";
 
 function App() {
-  const { checkConnection } = useWalletStore();
-  
-  useEffect(() => {
-    checkConnection();
-  }, [checkConnection]);
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto">
