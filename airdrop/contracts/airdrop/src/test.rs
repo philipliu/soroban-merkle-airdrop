@@ -23,6 +23,11 @@ fn make_args(env: &Env, hash: &str, token: Address) -> (BytesN<32>, Address) {
     (root_hash, token)
 }
 
+fn hex_to_bytes(env: &Env, hex_str: &str) -> BytesN<32> {
+    let hash_bytes = hex::decode(hex_str).unwrap().try_into().unwrap();
+    BytesN::from_array(env, &hash_bytes)
+}
+
 #[test]
 fn test_valid_claim() {
     let env = Env::default();
@@ -33,7 +38,7 @@ fn test_valid_claim() {
 
     let args = make_args(
         &env,
-        "8943b9ea17c82021714e46d047234e52db5fa43f25a427fbb80831f1a384c340",
+        "8ba44aa873264e1c61665f78de4a10d3da54b5a4327e799ade3415403401b88a",
         token.address.clone(),
     );
     let contract_id = env.register(AirdropContract {}, args);
@@ -48,13 +53,8 @@ fn test_valid_claim() {
     let amount = 100;
     let proofs = vec![
         &env,
-        BytesN::from_array(
-            &env,
-            &hex::decode("a5a8655f4b3f68e556a2e7edcf8fd44863ab22bad99cfc6b14d8bdff943e7833")
-                .unwrap()
-                .try_into()
-                .unwrap(),
-        ),
+        hex_to_bytes(&env, "68df7bf0d0a4bfe053dd9311f3c9a0286d81a8ae9822504bde910b62babe1de2"),
+        hex_to_bytes(&env, "c793b80c5113ce237b5c8bb9852768113c03cbb8eafa0d82bf396b715f1aecaf"),
     ];
 
     client.claim(&receiver, &amount, &proofs);
@@ -74,7 +74,7 @@ fn test_double_claim() {
 
     let args = make_args(
         &env,
-        "8943b9ea17c82021714e46d047234e52db5fa43f25a427fbb80831f1a384c340",
+        "8ba44aa873264e1c61665f78de4a10d3da54b5a4327e799ade3415403401b88a",
         token.address.clone(),
     );
     let contract_id = env.register(AirdropContract {}, args);
@@ -89,13 +89,8 @@ fn test_double_claim() {
     let amount: i128 = 100;
     let proofs = vec![
         &env,
-        BytesN::from_array(
-            &env,
-            &hex::decode("a5a8655f4b3f68e556a2e7edcf8fd44863ab22bad99cfc6b14d8bdff943e7833")
-                .unwrap()
-                .try_into()
-                .unwrap(),
-        ),
+        hex_to_bytes(&env, "68df7bf0d0a4bfe053dd9311f3c9a0286d81a8ae9822504bde910b62babe1de2"),
+        hex_to_bytes(&env, "c793b80c5113ce237b5c8bb9852768113c03cbb8eafa0d82bf396b715f1aecaf"),
     ];
 
     client.claim(&receiver, &amount, &proofs);

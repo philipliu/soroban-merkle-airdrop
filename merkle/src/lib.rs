@@ -1,5 +1,6 @@
-use sha3::{Digest, Keccak256};
 use std::collections::HashMap;
+
+use sha2::{Digest, Sha256};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MerkleTree {
@@ -11,7 +12,7 @@ impl MerkleTree {
     pub fn new<T: AsRef<[u8]>, I: IntoIterator<Item = T>>(data: I) -> Self {
         let mut digests = data
             .into_iter()
-            .map(|d| keccak256(d.as_ref()))
+            .map(|d| sha256(d.as_ref()))
             .collect::<Vec<_>>();
 
         digests.sort();
@@ -57,7 +58,7 @@ impl MerkleTree {
     }
 
     pub fn get_proof<T: AsRef<[u8]>>(&self, data: T) -> Option<Vec<[u8; 32]>> {
-        let hash = keccak256(data.as_ref());
+        let hash = sha256(data.as_ref());
 
         self.leaf_indicies.get(&hash)?;
         let mut idx = *self.leaf_indicies.get(&hash).unwrap();
@@ -88,7 +89,7 @@ impl MerkleTree {
 }
 
 fn merge(a: &[u8; 32], b: &[u8; 32]) -> [u8; 32] {
-    let mut digest = Keccak256::new();
+    let mut digest = Sha256::new();
     if a < b {
         digest.update(a);
         digest.update(b);
@@ -103,8 +104,8 @@ fn merge(a: &[u8; 32], b: &[u8; 32]) -> [u8; 32] {
     hash
 }
 
-fn keccak256<T: AsRef<[u8]>>(data: T) -> [u8; 32] {
-    let mut digest = Keccak256::new();
+fn sha256<T: AsRef<[u8]>>(data: T) -> [u8; 32] {
+    let mut digest = Sha256::new();
     digest.update(data);
     let result = digest.finalize();
     let mut hash = [0u8; 32];
@@ -114,7 +115,7 @@ fn keccak256<T: AsRef<[u8]>>(data: T) -> [u8; 32] {
 }
 
 pub fn verify<T: AsRef<[u8]>>(root: &[u8; 32], data: T, proof: &[[u8; 32]]) -> bool {
-    let mut hash = keccak256(data.as_ref());
+    let mut hash = sha256(data.as_ref());
 
     for p in proof {
         hash = merge(&hash, p);
