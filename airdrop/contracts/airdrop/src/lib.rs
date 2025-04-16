@@ -33,9 +33,20 @@ pub struct AirdropContract;
 
 #[contractimpl]
 impl AirdropContract {
-    pub fn __constructor(env: Env, root_hash: BytesN<32>, token: Address) {
+    pub fn __constructor(
+        env: Env,
+        root_hash: BytesN<32>,
+        token: Address,
+        funding_amount: i128,
+        funding_source: Address,
+    ) {
         env.storage().instance().set(&DataKey::RootHash, &root_hash);
         env.storage().instance().set(&DataKey::TokenAddress, &token);
+        token::TokenClient::new(&env, &token).transfer(
+            &funding_source,
+            &env.current_contract_address(),
+            &funding_amount,
+        );
     }
 
     pub fn claim(

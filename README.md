@@ -65,7 +65,8 @@ cargo run --bin merkle -- <receivers-file> <proofs-output-file>
 
 ## Contract Deployment
 
-Deploy the contract using the following command:
+Deploy the contract using the following command to initialize the 
+contract with funds transferred from the source account to the contract.
 
 ```bash
 stellar contract deploy \
@@ -75,9 +76,9 @@ stellar contract deploy \
 -- \
 --root_hash <your-root-hash> \
 --token CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC
+--funding_amount <funding-amount>\
+--funding_source <alice address>
 ```
-
-Next, send the deployed contract funds to distribute.
 
 ## Claim UI
 

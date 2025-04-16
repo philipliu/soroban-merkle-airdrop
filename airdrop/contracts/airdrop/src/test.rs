@@ -14,13 +14,13 @@ fn create_token_contract<'a>(e: &Env, admin: &Address) -> (TokenClient<'a>, Toke
     )
 }
 
-fn make_args(env: &Env, hash: &str, token: Address) -> (BytesN<32>, Address) {
+fn make_args(env: &Env, hash: &str, token: Address, funding_amount: i128, funding_source: Address) -> (BytesN<32>, Address, i128, Address) {
     let mut hash_bytes = [0u8; 32];
     hex::decode_to_slice(hash, &mut hash_bytes).unwrap();
 
     let root_hash = BytesN::from_array(env, &hash_bytes);
 
-    (root_hash, token)
+    (root_hash, token, funding_amount, funding_source)
 }
 
 fn hex_to_bytes(env: &Env, hex_str: &str) -> BytesN<32> {
@@ -31,20 +31,22 @@ fn hex_to_bytes(env: &Env, hex_str: &str) -> BytesN<32> {
 #[test]
 fn test_valid_claim() {
     let env = Env::default();
-    env.mock_all_auths();
+    env.mock_all_auths_allowing_non_root_auth();
 
     let token_admin = Address::generate(&env);
     let (token, token_admin_client) = create_token_contract(&env, &token_admin);
+    token_admin_client.mint(&token_admin_client.address, &1000);
 
-    let args = make_args(
+    let constructor_args = make_args(
         &env,
         "8ba44aa873264e1c61665f78de4a10d3da54b5a4327e799ade3415403401b88a",
         token.address.clone(),
+        1000,
+        token_admin_client.address.clone(),
     );
-    let contract_id = env.register(AirdropContract {}, args);
-    let client = AirdropContractClient::new(&env, &contract_id);
 
-    token_admin_client.mint(&contract_id, &1000);
+    let contract_id = env.register(AirdropContract {}, constructor_args);
+    let client = AirdropContractClient::new(&env, &contract_id);
 
     let receiver = Address::from_str(
         &env,
@@ -66,21 +68,22 @@ fn test_valid_claim() {
 #[test]
 #[should_panic]
 fn test_double_claim() {
-    let env = Env::default();
-    env.mock_all_auths();
+    let env: Env = Env::default();
+    env.mock_all_auths_allowing_non_root_auth();
 
     let token_admin = Address::generate(&env);
     let (token, token_admin_client) = create_token_contract(&env, &token_admin);
+    token_admin_client.mint(&token_admin_client.address, &1000);
 
     let args = make_args(
         &env,
         "8ba44aa873264e1c61665f78de4a10d3da54b5a4327e799ade3415403401b88a",
         token.address.clone(),
+        1000,
+        token_admin_client.address.clone(),
     );
     let contract_id = env.register(AirdropContract {}, args);
     let client = AirdropContractClient::new(&env, &contract_id);
-
-    token_admin_client.mint(&contract_id, &1000);
 
     let receiver = Address::from_str(
         &env,
@@ -101,20 +104,21 @@ fn test_double_claim() {
 #[should_panic]
 fn test_bad_claim() {
     let env = Env::default();
-    env.mock_all_auths();
+    env.mock_all_auths_allowing_non_root_auth();
 
     let token_admin = Address::generate(&env);
     let (token, token_admin_client) = create_token_contract(&env, &token_admin);
+    token_admin_client.mint(&token_admin_client.address, &1000);
 
     let args = make_args(
         &env,
         "8943b9ea17c82021714e46d047234e52db5fa43f25a427fbb80831f1a384c340",
         token.address.clone(),
+        1000,
+        token_admin_client.address.clone(),
     );
     let contract_id = env.register(AirdropContract {}, args);
     let client = AirdropContractClient::new(&env, &contract_id);
-
-    token_admin_client.mint(&contract_id, &1000);
 
     let receiver = Address::from_str(
         &env,
