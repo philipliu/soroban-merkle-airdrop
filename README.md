@@ -51,6 +51,7 @@ cargo run --bin merkle -- <receivers-file> <proofs-output-file>
 ```json
 [
     {
+        "index": 0,
         "receiver": {
             "address": "GDDJCEMJLXXEWNPCUSXOM5BV7CDH7AR54WYJWZYQUDPY655UGVI5ZX5Y",
             "amount": 100
