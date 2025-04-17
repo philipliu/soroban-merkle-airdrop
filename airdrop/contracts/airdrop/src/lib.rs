@@ -73,6 +73,10 @@ impl AirdropContract {
 
         chunk |= 1 << bit_index;
         env.storage().persistent().set(&key, &chunk);
+
+        let min_ttl_ledgers = 518400; // ~30 days
+        let max_ttl_ledgers = 1036800; // ~60 days
+        env.storage().persistent().extend_ttl(&key, min_ttl_ledgers, max_ttl_ledgers);
     }
 
     pub fn claim(
