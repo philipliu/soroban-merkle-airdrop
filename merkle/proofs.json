@@ -1,0 +1,65 @@
+[
+  {
+    "index": 0,
+    "receiver": {
+      "address": "GD5RUZEO3ZCW6UX6Y4FRHKC7ZWWKTKUOPCQKYKYPCF2K7M7AD7J2URPW",
+      "amount": 100000000
+    },
+    "proofs": [
+      "cd9bbfb141e8c63b620238d79aabfbe5eaf16309874b3f32fc443b4f477c9b2f",
+      "7aa34def4e37f3359bdfe5b7eebdc8d18b741b880febcf78e250a4a3f6e3fe74",
+      "cd9bbfb141e8c63b620238d79aabfbe5eaf16309874b3f32fc443b4f477c9b2f",
+      "7aa34def4e37f3359bdfe5b7eebdc8d18b741b880febcf78e250a4a3f6e3fe74",
+      "cd9bbfb141e8c63b620238d79aabfbe5eaf16309874b3f32fc443b4f477c9b2f",
+      "7aa34def4e37f3359bdfe5b7eebdc8d18b741b880febcf78e250a4a3f6e3fe74",
+      "cd9bbfb141e8c63b620238d79aabfbe5eaf16309874b3f32fc443b4f477c9b2f",
+      "7aa34def4e37f3359bdfe5b7eebdc8d18b741b880febcf78e250a4a3f6e3fe74",
+       "cd9bbfb141e8c63b620238d79aabfbe5eaf16309874b3f32fc443b4f477c9b2f",
+      "7aa34def4e37f3359bdfe5b7eebdc8d18b741b880febcf78e250a4a3f6e3fe74",
+      "cd9bbfb141e8c63b620238d79aabfbe5eaf16309874b3f32fc443b4f477c9b2f",
+      "7aa34def4e37f3359bdfe5b7eebdc8d18b741b880febcf78e250a4a3f6e3fe74",
+      "cd9bbfb141e8c63b620238d79aabfbe5eaf16309874b3f32fc443b4f477c9b2f",
+      "7aa34def4e37f3359bdfe5b7eebdc8d18b741b880febcf78e250a4a3f6e3fe74",
+      "cd9bbfb141e8c63b620238d79aabfbe5eaf16309874b3f32fc443b4f477c9b2f",
+      "7aa34def4e37f3359bdfe5b7eebdc8d18b741b880febcf78e250a4a3f6e3fe74",
+      "cd9bbfb141e8c63b620238d79aabfbe5eaf16309874b3f32fc443b4f477c9b2f",
+      "7aa34def4e37f3359bdfe5b7eebdc8d18b741b880febcf78e250a4a3f6e3fe74",
+      "cd9bbfb141e8c63b620238d79aabfbe5eaf16309874b3f32fc443b4f477c9b2f",
+      "7aa34def4e37f3359bdfe5b7eebdc8d18b741b880febcf78e250a4a3f6e3fe74",
+       "cd9bbfb141e8c63b620238d79aabfbe5eaf16309874b3f32fc443b4f477c9b2f"
+   ]
+  },
+  {
+    "index": 1,
+    "receiver": {
+      "address": "GAQ32GZG3X5AH2QU66WZ6HMU44UVXZOC4GZNH57KB4Y2XQBKVAK4FMJE",
+      "amount": 100000000
+    },
+    "proofs": [
+      "bab7bc2e36db8910a5e047989f1bfb6791bb8a2d3b3218fd363969294aaac83e",
+      "7aa34def4e37f3359bdfe5b7eebdc8d18b741b880febcf78e250a4a3f6e3fe74"
+    ]
+  },
+  {
+    "index": 2,
+    "receiver": {
+      "address": "GBBGPC7OBPPDH7VL5MYGROGPIG7VXXMS5KD34YOVA7HYRLNLMU45MJ62",
+      "amount": 100000000
+    },
+    "proofs": [
+      "e354c52475f392edd92ad579eb33d73b2eda7bdafeab0cda7e651edc106153cd",
+      "c83f7b26055572e5e84c78ec4d4f45b85b71698951077baafe195279c1f30be4"
+    ]
+  },
+  {
+    "index": 3,
+    "receiver": {
+      "address": "CAASCQKVVBSLREPEUGPOTQZ4BC2NDBY2MW7B2LGIGFUPIY4Z3XUZRVTX",
+      "amount": 100
+    },
+    "proofs": [
+      "fc0d9c2f46c1e910bd3af8665318714c7c97486d2a206f96236c6e7e50c080d7",
+      "c83f7b26055572e5e84c78ec4d4f45b85b71698951077baafe195279c1f30be4"
+    ]
+  }
+]

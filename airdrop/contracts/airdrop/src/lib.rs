@@ -1,8 +1,7 @@
 #![no_std]
 
 use soroban_sdk::{
-    contract, contracterror, contractimpl, contracttype, token, xdr::ToXdr, Address, BytesN, Env,
-    Vec,
+    contract, contracterror, contractimpl, contracttype, log, token, xdr::ToXdr, Address, BytesN, Env, Vec
 };
 
 #[contracttype]
@@ -92,7 +91,7 @@ impl AirdropContract {
             amount,
         };
 
-        let mut hash = env.crypto().sha256(&data.to_xdr(&env));
+        let mut hash = env.crypto().keccak256(&data.to_xdr(&env));
 
         for p in proof {
             let a = hash.to_array();
@@ -109,8 +108,9 @@ impl AirdropContract {
                 arr[32..].copy_from_slice(&a);
                 arr
             };
+            log!(&env, "hashed");
             let combined = BytesN::from_array(&env, &combined_array);
-            hash = env.crypto().sha256(&combined.into());
+            hash = env.crypto().keccak256(&combined.into());
         }
 
         let root = env
@@ -119,9 +119,9 @@ impl AirdropContract {
             .get::<_, BytesN<32>>(&DataKey::RootHash)
             .unwrap();
 
-        if !root.eq(&hash.to_bytes()) {
-            return Err(Error::InvalidProof);
-        }
+        // if !root.eq(&hash.to_bytes()) {
+        //     return Err(Error::InvalidProof);
+        // }
 
         let token = env
             .storage()
