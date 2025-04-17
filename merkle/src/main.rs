@@ -20,16 +20,21 @@ struct Receiver {
 
 #[derive(Debug, Clone, Serialize)]
 struct Proofs {
+    pub index: usize,
     pub receiver: Receiver,
     pub proofs: Vec<String>,
 }
 
-fn make_receiver(address: &str, amount: i128) -> Result<ScVal, ()> {
+fn make_receiver(index: usize, address: &str, amount: i128) -> Result<ScVal, ()> {
     let i128parts = Int128Parts {
         hi: (amount >> 64) as i64,
         lo: amount as u64,
     };
     let entries = vec![
+        ScMapEntry {
+            key: ScVal::Symbol(ScSymbol(StringM::from_str("index")?)),
+            val: ScVal::U32(index as u32),
+        },
         ScMapEntry {
             key: ScVal::Symbol(ScSymbol(StringM::from_str("address")?)),
             val: ScVal::Address(ScAddress::from_str(address)?),
@@ -62,25 +67,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let receivers: Vec<Receiver> = serde_json::from_reader(receiver_file)
         .map_err(|e| format!("Failed to parse JSON: {}", e))?;
 
-    let serialized_receivers: Vec<(Receiver, Vec<u8>)> = receivers
-        .iter()
-        .map(|receiver| {
-            (
-                receiver.clone(),
-                make_receiver(&receiver.address, receiver.amount).unwrap(),
-            )
-        })
-        .map(|(receiver, val)| (receiver.clone(), val.to_xdr(Limits::none()).unwrap()))
+    let serialized_receivers: Vec<Vec<u8>> = receivers
+        .iter().enumerate()
+        .map(|(index,receiver)| {
+                make_receiver(index, &receiver.address, receiver.amount).unwrap()
+            })        
+        .map(|val|  val.to_xdr(Limits::none()).unwrap())
         .collect();
 
-    let tree = MerkleTree::new(serialized_receivers.clone().iter().map(|(_, val)| val));
+    let tree = MerkleTree::new(serialized_receivers.clone());
 
     println!("root: {}", hex::encode(tree.root().unwrap()));
 
     let proofs: Vec<Proofs> = serialized_receivers
-        .iter()
-        .map(|(receiver, data)| Proofs {
-            receiver: receiver.clone(),
+        .iter().enumerate()
+        .map(|(index, data)| Proofs {
+            index,
+            receiver: receivers.get(index).unwrap().clone(),
             proofs: tree
                 .get_proof(data.clone())
                 .unwrap_or_default()

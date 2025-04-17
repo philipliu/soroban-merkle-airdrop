@@ -214,11 +214,16 @@
                               "symbol": "Claimed"
                             },
                             {
-                              "address": "CAASCQKVVBSLREPEUGPOTQZ4BC2NDBY2MW7B2LGIGFUPIY4Z3XUZRVTX"
+                              "u32": 0
                             }
                           ]
                         },
-                        "val": "void"
+                        "val": {
+                          "u128": {
+                            "hi": 0,
+                            "lo": 8
+                          }
+                        }
                       },
                       {
                         "key": {
@@ -229,7 +234,7 @@
                           ]
                         },
                         "val": {
-                          "bytes": "8ba44aa873264e1c61665f78de4a10d3da54b5a4327e799ade3415403401b88a"
+                          "bytes": "11932105f1a4d0092e87cead3a543da5afd8adcff63f9a8ceb6c5db3c8135722"
                         }
                       },
                       {

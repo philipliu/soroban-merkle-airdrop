@@ -39,7 +39,7 @@ fn test_valid_claim() {
 
     let constructor_args = make_args(
         &env,
-        "8ba44aa873264e1c61665f78de4a10d3da54b5a4327e799ade3415403401b88a",
+        "11932105f1a4d0092e87cead3a543da5afd8adcff63f9a8ceb6c5db3c8135722",
         token.address.clone(),
         1000,
         token_admin_client.address.clone(),
@@ -55,11 +55,11 @@ fn test_valid_claim() {
     let amount = 100;
     let proofs = vec![
         &env,
-        hex_to_bytes(&env, "68df7bf0d0a4bfe053dd9311f3c9a0286d81a8ae9822504bde910b62babe1de2"),
-        hex_to_bytes(&env, "c793b80c5113ce237b5c8bb9852768113c03cbb8eafa0d82bf396b715f1aecaf"),
+        hex_to_bytes(&env, "fc0d9c2f46c1e910bd3af8665318714c7c97486d2a206f96236c6e7e50c080d7"),
+        hex_to_bytes(&env, "c83f7b26055572e5e84c78ec4d4f45b85b71698951077baafe195279c1f30be4"),
     ];
 
-    client.claim(&receiver, &amount, &proofs);
+    client.claim(&3_u32, &receiver, &amount, &proofs);
     assert_eq!(token.balance(&receiver), 100);
     assert_eq!(token.balance(&contract_id), 900);
     assert!(env.auths().is_empty());
@@ -77,7 +77,7 @@ fn test_double_claim() {
 
     let args = make_args(
         &env,
-        "8ba44aa873264e1c61665f78de4a10d3da54b5a4327e799ade3415403401b88a",
+        "11932105f1a4d0092e87cead3a543da5afd8adcff63f9a8ceb6c5db3c8135722",
         token.address.clone(),
         1000,
         token_admin_client.address.clone(),
@@ -92,12 +92,12 @@ fn test_double_claim() {
     let amount: i128 = 100;
     let proofs = vec![
         &env,
-        hex_to_bytes(&env, "68df7bf0d0a4bfe053dd9311f3c9a0286d81a8ae9822504bde910b62babe1de2"),
-        hex_to_bytes(&env, "c793b80c5113ce237b5c8bb9852768113c03cbb8eafa0d82bf396b715f1aecaf"),
+        hex_to_bytes(&env, "fc0d9c2f46c1e910bd3af8665318714c7c97486d2a206f96236c6e7e50c080d7"),
+        hex_to_bytes(&env, "c83f7b26055572e5e84c78ec4d4f45b85b71698951077baafe195279c1f30be4"),
     ];
 
-    client.claim(&receiver, &amount, &proofs);
-    client.claim(&receiver, &amount, &proofs);
+    client.claim(&3_u32, &receiver, &amount, &proofs);
+    client.claim(&3_u32, &receiver, &amount, &proofs);
 }
 
 #[test]
@@ -112,7 +112,7 @@ fn test_bad_claim() {
 
     let args = make_args(
         &env,
-        "8943b9ea17c82021714e46d047234e52db5fa43f25a427fbb80831f1a384c340",
+        "11932105f1a4d0092e87cead3a543da5afd8adcff63f9a8ceb6c5db3c8135722",
         token.address.clone(),
         1000,
         token_admin_client.address.clone(),
@@ -127,14 +127,9 @@ fn test_bad_claim() {
     let amount = 100000; // This is a different amount
     let proofs = vec![
         &env,
-        BytesN::from_array(
-            &env,
-            &hex::decode("a5a8655f4b3f68e556a2e7edcf8fd44863ab22bad99cfc6b14d8bdff943e7833")
-                .unwrap()
-                .try_into()
-                .unwrap(),
-        ),
+        hex_to_bytes(&env, "fc0d9c2f46c1e910bd3af8665318714c7c97486d2a206f96236c6e7e50c080d7"),
+        hex_to_bytes(&env, "c83f7b26055572e5e84c78ec4d4f45b85b71698951077baafe195279c1f30be4")
     ];
 
-    client.claim(&receiver, &amount, &proofs);
+    client.claim(&3_u32, &receiver, &amount, &proofs);
 }

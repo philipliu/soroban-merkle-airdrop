@@ -34,7 +34,7 @@ if (typeof window !== 'undefined') {
 export const networks = {
   testnet: {
     networkPassphrase: "Test SDF Network ; September 2015",
-    contractId: "CBUT73GYAITAX3J55HFIZ3JPOOOTYHEW6OBXD6EN7JKHDBTPUUFIOYN7",
+    contractId: "CBSMARIEUIPI2FI7UITQ2FGXDZ4WGN7KMIQKYSZQFRWZ5N5BBYNCA7X5",
   }
 } as const
 
@@ -48,7 +48,7 @@ export interface Client {
   /**
    * Construct and simulate a claim transaction. Returns an `AssembledTransaction` object which will have a `result` field containing the result of the simulation. If this transaction changes contract state, you will need to call `signAndSend()` on the returned object.
    */
-  claim: ({receiver, amount, proof}: {receiver: string, amount: i128, proof: Array<Buffer>}, options?: {
+  claim: ({index, receiver, amount, proof}: {index: u32, receiver: string, amount: i128, proof: Array<Buffer>}, options?: {
     /**
      * The fee to pay for the transaction. Default: BASE_FEE
      */
@@ -69,7 +69,7 @@ export interface Client {
 export class Client extends ContractClient {
   static async deploy<T = Client>(
         /** Constructor/Initialization Args for the contract's `__constructor` method */
-        {root_hash, token}: {root_hash: Buffer, token: string},
+        {root_hash, token, funding_amount, funding_source}: {root_hash: Buffer, token: string, funding_amount: i128, funding_source: string},
     /** Options for initalizing a Client as well as for calling a method, with extras specific to deploying. */
     options: MethodOptions &
       Omit<ContractClientOptions, "contractId"> & {
@@ -81,13 +81,13 @@ export class Client extends ContractClient {
         format?: "hex" | "base64";
       }
   ): Promise<AssembledTransaction<T>> {
-    return ContractClient.deploy({root_hash, token}, options)
+    return ContractClient.deploy({root_hash, token, funding_amount, funding_source}, options)
   }
   constructor(public readonly options: ContractClientOptions) {
     super(
       new ContractSpec([ "AAAABAAAAAAAAAAAAAAABUVycm9yAAAAAAAAAgAAAAAAAAAOQWxyZWFkeUNsYWltZWQAAAAAAAEAAAAAAAAADEludmFsaWRQcm9vZgAAAAI=",
-        "AAAAAAAAAAAAAAANX19jb25zdHJ1Y3RvcgAAAAAAAAIAAAAAAAAACXJvb3RfaGFzaAAAAAAAA+4AAAAgAAAAAAAAAAV0b2tlbgAAAAAAABMAAAAA",
-        "AAAAAAAAAAAAAAAFY2xhaW0AAAAAAAADAAAAAAAAAAhyZWNlaXZlcgAAABMAAAAAAAAABmFtb3VudAAAAAAACwAAAAAAAAAFcHJvb2YAAAAAAAPqAAAD7gAAACAAAAABAAAD6QAAA+0AAAAAAAAAAw==" ]),
+        "AAAAAAAAAAAAAAANX19jb25zdHJ1Y3RvcgAAAAAAAAQAAAAAAAAACXJvb3RfaGFzaAAAAAAAA+4AAAAgAAAAAAAAAAV0b2tlbgAAAAAAABMAAAAAAAAADmZ1bmRpbmdfYW1vdW50AAAAAAALAAAAAAAAAA5mdW5kaW5nX3NvdXJjZQAAAAAAEwAAAAA=",
+        "AAAAAAAAAAAAAAAFY2xhaW0AAAAAAAAEAAAAAAAAAAVpbmRleAAAAAAAAAQAAAAAAAAACHJlY2VpdmVyAAAAEwAAAAAAAAAGYW1vdW50AAAAAAALAAAAAAAAAAVwcm9vZgAAAAAAA+oAAAPuAAAAIAAAAAEAAAPpAAAD7QAAAAAAAAAD" ]),
       options
     )
   }

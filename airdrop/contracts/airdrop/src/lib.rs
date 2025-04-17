@@ -10,7 +10,7 @@ use soroban_sdk::{
 enum DataKey {
     RootHash,
     TokenAddress,
-    Claimed(Address),
+    Claimed(u32)
 }
 
 #[contracterror]
@@ -24,6 +24,7 @@ pub enum Error {
 #[contracttype]
 #[derive(Clone, Debug)]
 struct Receiver {
+    pub index: u32,
     pub address: Address,
     pub amount: i128,
 }
@@ -49,22 +50,44 @@ impl AirdropContract {
         );
     }
 
+    fn is_claimed(env: Env, index: u32) -> bool {
+        let chunk_index = index / 128;
+        let bit_index = index % 128;
+        let key = DataKey::Claimed(chunk_index as u32);
+        let chunk = env
+            .storage()
+            .instance()
+            .get::<_, u128>(&key).unwrap_or(0);
+
+        (chunk >> bit_index) & 1 == 1
+    }
+    
+    fn set_claimed(env: Env, index: u32) {
+        let chunk_index = index / 128;
+        let bit_index = index % 128;
+        let key = DataKey::Claimed(chunk_index as u32);
+        let mut chunk = env
+            .storage()
+            .instance()
+            .get::<_, u128>(&key).unwrap_or(0);
+
+        chunk |= 1 << bit_index;
+        env.storage().instance().set(&key, &chunk);
+    }
+
     pub fn claim(
         env: Env,
+        index: u32,
         receiver: Address,
         amount: i128,
         proof: Vec<BytesN<32>>,
     ) -> Result<(), Error> {
-        if env
-            .storage()
-            .instance()
-            .get::<_, ()>(&DataKey::Claimed(receiver.clone()))
-            .is_some()
-        {
+        if Self::is_claimed(env.clone(), index) {
             return Err(Error::AlreadyClaimed);
         }
 
         let data = Receiver {
+            index,
             address: receiver.clone(),
             amount,
         };
@@ -112,9 +135,7 @@ impl AirdropContract {
             &amount,
         );
 
-        env.storage()
-            .instance()
-            .set(&DataKey::Claimed(receiver), &());
+        Self::set_claimed(env, index);
 
         Ok(())
     }

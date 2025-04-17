@@ -4,6 +4,7 @@ import { signTransaction } from "../packages/stellar-wallets-kit";
 import { useWalletStore } from "../store/walletStore";
 
 interface ProofEntry {
+    index: number;
     receiver: {
         address: string;
         amount: number;
@@ -56,6 +57,7 @@ export default function ClaimButton() {
         ? proofData.find((entry) => entry.receiver.address === publicKey)
         : undefined;
 
+    const index = walletProof?.index || 0;
     const amount = walletProof?.receiver.amount || 0;
     const proofHexes = walletProof?.proofs || [];
     const proof = proofHexes.map((hex) => Buffer.from(hex, "hex"));
@@ -94,6 +96,7 @@ export default function ClaimButton() {
             
             // Simulate the transaction
             const tx = await contract.claim({
+                index,
                 receiver: publicKey,
                 amount: BigInt(amount),
                 proof,
@@ -178,6 +181,7 @@ export default function ClaimButton() {
                         }
                         
                         const tx = await contract.claim({
+                            index,
                             receiver: publicKey,
                             amount: BigInt(amount),
                             proof,
