@@ -72,6 +72,21 @@ impl AirdropContract {
 
         chunk |= 1 << bit_index;
         env.storage().persistent().set(&key, &chunk);
+
+        let min_ttl_ledgers = 518400; // ~30 days
+        let max_ttl_ledgers = 1036800; // ~60 days
+        env.storage().persistent().extend_ttl(&key, min_ttl_ledgers, max_ttl_ledgers);
+    }
+
+    pub fn write_entry(env: Env, low: u32, high: u32) {
+        for i in low..high {
+            let key = DataKey::Claimed(i);
+            env.storage().persistent().set(&key, &0_u128);
+
+            let min_ttl_ledgers = 518400; // ~30 days
+            let max_ttl_ledgers = 1036800; // ~60 days
+            env.storage().persistent().extend_ttl(&key, min_ttl_ledgers, max_ttl_ledgers);
+        }
     }
 
     pub fn claim(
@@ -91,7 +106,7 @@ impl AirdropContract {
             amount,
         };
 
-        let mut hash = env.crypto().keccak256(&data.to_xdr(&env));
+        let mut hash = env.crypto().sha256(&data.to_xdr(&env));
 
         for p in proof {
             let a = hash.to_array();
@@ -110,7 +125,7 @@ impl AirdropContract {
             };
             log!(&env, "hashed");
             let combined = BytesN::from_array(&env, &combined_array);
-            hash = env.crypto().keccak256(&combined.into());
+            hash = env.crypto().sha256(&combined.into());
         }
 
         let root = env
